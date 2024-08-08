@@ -15,20 +15,24 @@ class ExpenseController extends Controller
     {
         $month = $request->month ? Carbon::parse($request->month)->month : Carbon::now()->month;
         $year = $request->year ?? Carbon::now()->year;
-        $expenses = Auth::user()->expenses;
-        $total_income_this_month = Expense::where('user_id', Auth::user()->id)->where('type', 1)->whereYear('date', $year)->whereMonth('date', $month)->get();
-        $total_expense_this_month = Expense::where('user_id', Auth::user()->id)->where('type', 2)->whereYear('date', $year)->whereMonth('date', $month)->get();
-        $total_loan_taken_this_month = Expense::where('user_id', Auth::user()->id)->where('type', 3)->whereYear('date', $year)->whereMonth('date', $month)->get();
-        $total_loan_given_this_month = Expense::where('user_id', Auth::user()->id)->where('type', 4)->whereYear('date', $year)->whereMonth('date', $month)->get();
 
-        // dd(Carbon::now()->month);
+        $expenses = $request->query() ? Expense::where('user_id', Auth::user()->id)
+        ->whereYear('date', $year)
+        ->whereMonth('date', $month)
+        ->get() : Auth::user()->expenses;
+
+        $total_income_amount     = $expenses->where('type', 1)->sum('amount');
+        $total_expense_amount    = $expenses->where('type', 2)->sum('amount');
+        $total_loan_taken_amount = $expenses->where('type', 3)->sum('amount');
+        $total_loan_given_amount = $expenses->where('type', 4)->sum('amount');
+
         return Inertia::render('Expenses/Index', [
             'pre_month' => $request->month,
             'expenses' => $expenses,
-            'income' => $total_income_this_month->sum('amount'),
-            'expense' => $total_expense_this_month->sum('amount'),
-            'loan_taken' => $total_loan_taken_this_month->sum('amount'),
-            'loan_given' => $total_loan_given_this_month->sum('amount'),
+            'income' => $total_income_amount,
+            'expense' => $total_expense_amount,
+            'loan_taken' => $total_loan_taken_amount,
+            'loan_given' => $total_loan_given_amount,
         ]);
     }
 

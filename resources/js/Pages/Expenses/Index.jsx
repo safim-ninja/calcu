@@ -2,10 +2,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Link, Head, useForm} from '@inertiajs/react';
 import { Inertia } from '@inertiajs/inertia';
 import { Edit } from '@mui/icons-material';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { DeleteOutline, FilterList } from '@mui/icons-material';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 const padIndex = (index, maxEntries) => {
     const maxDigits = String(maxEntries).length;
     return String(index).padStart(maxDigits, '0');
@@ -40,6 +40,40 @@ export default function Index({auth, expenses, income, expense, loan_taken, loan
     };
     const maxEntries = expenses.length;
 
+    const [exps, setExps] = useState(expenses);
+    const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
+    useEffect(() => {
+        setExps(expenses);
+    }, [expenses])
+
+    const handleSort = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+
+        const sortedExpenses = [...exps].sort((a, b) => {
+            if (key === 'date') {
+                return direction === 'ascending'
+                    ? new Date(a[key]) - new Date(b[key])
+                    : new Date(b[key]) - new Date(a[key]);
+            } else {
+                if (a[key] < b[key]) {
+                    return direction === 'ascending' ? -1 : 1;
+                }
+                if (a[key] > b[key]) {
+                    return direction === 'ascending' ? 1 : -1;
+                }
+                return 0;
+            }
+        });
+
+        setExps(sortedExpenses);
+        setSortConfig({ key, direction });
+    };
+
+
+
     return (
         <AuthenticatedLayout user={auth.user}
             header={<h2 className="font-semibold text-xl text-slate-800 dark:text-slate-200 leading-tight">Expenses</h2>}
@@ -70,7 +104,7 @@ export default function Index({auth, expenses, income, expense, loan_taken, loan
                                         </option>
                                     ))}
                                 </select>
-                                <Link href={route('expenses.index', {month: month, year: year})} preserveScroll>Filter</Link>
+                                <Link href={route('expenses.index', {month: month, year: year})} preserveScroll><button className='border border-slate-700 font-medium rounded bg-slate-800 px-3 py-1 mx-1 hover:text-blue-500 hover:bg-slate-900'><FilterList /></button></Link>
                             </h1>
                         </div>
                         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -100,24 +134,24 @@ export default function Index({auth, expenses, income, expense, loan_taken, loan
                         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <div className="flex justify-center pb-4">
                             <h1 className="text-black text-2xl dark:text-slate-400 font-semibold ">
-                                Report of
+                                Expenses List
                             </h1>
                         </div>
                             <table className="w-full text-sm text-left rtl:text-right text-slate-500 dark:text-slate-400">
                                 <thead className="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-400">
                                     <tr>
                                         <th scope="col" className="px-6 py-3">#</th>
-                                        <th scope="col" className="px-6 py-3">Amount</th>
+                                        <th scope="col" className="px-6 py-3 hover:bg-slate-800 transition cursor-pointer" onClick={() => handleSort('amount')}>Amount</th>
                                         <th scope="col" className="px-6 py-3">Type</th>
-                                        <th scope="col" className="px-6 py-3">Date</th>
+                                        <th scope="col" className="px-6 py-3" onClick={() => handleSort('date')}>Date</th>
                                         <th scope="col" className="px-6 py-3">Description</th>
                                         <th scope="col" className="px-6 py-3 text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {expenses?.map((expense, index) => {
+                                {exps?.map((expense, index) => {
                                     return (
-                                        <tr key={index} className={`bg-white font-semibold dark:bg-slate-900 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-950 ${index+1 !== expenses.length ? 'border-b' : ''}`}>
+                                        <tr key={index} className={`bg-white font-semibold dark:bg-slate-900 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-950 ${index+1 !== exps.length ? 'border-b' : ''}`}>
                                             <th scope="row" className="px-6 py-2 text-slate-900 whitespace-nowrap dark:text-white"> {padIndex(index + 1, maxEntries)}</th>
                                             <td className="px-6 py-2"> {expense.amount} </td>
                                             <td className="px-6 py-2">
@@ -132,7 +166,7 @@ export default function Index({auth, expenses, income, expense, loan_taken, loan
                                                         <Edit />
                                                     </button>
                                                 </Link>
-                                                <button onClick={() => handleDelete(expense)} className="font-medium rounded bg-slate-800 px-3 py-1 mx-1 hover:text-blue-500 hover:bg-slate-900"><DeleteOutlineIcon /></button>
+                                                <button onClick={() => handleDelete(expense)} className="font-medium rounded bg-slate-800 px-3 py-1 mx-1 hover:text-blue-500 hover:bg-slate-900"><DeleteOutline /></button>
                                             </td>
                                         </tr>
                                     )
