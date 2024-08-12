@@ -26,5 +26,11 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('expenses', ExpenseController::class);
 });
-
+Route::get('/favicon', function () {
+    $path = public_path('/icons/favicon.ico');
+    if (file_exists($path)) {
+        return response()->file($path);
+    }
+    abort(404);
+});
 require __DIR__.'/auth.php';

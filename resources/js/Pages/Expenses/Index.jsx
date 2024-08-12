@@ -1,9 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Link, Head, useForm} from '@inertiajs/react';
-import { Inertia } from '@inertiajs/inertia';
-import { Edit } from '@mui/icons-material';
-import { DeleteOutline, FilterList } from '@mui/icons-material';
-import axios from 'axios';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { DeleteOutline, Edit, FilterList } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 const padIndex = (index, maxEntries) => {
@@ -89,7 +86,7 @@ export default function Index({auth, expenses, income, expense, loan_taken, loan
                             <h1 className="text-black text-2xl dark:text-slate-400 font-semibold ">
                                 Report of
                                 <select onChange={handleMonthChange} defaultValue={month}
-                                        className="border-0 underline bg-none bg-gray-50 text-black text-2xl dark:text-slate-400 font-semibold rounded-lg focus:transparent dark:focus:ring-transparent ring-transparent dark:ring-transparent p-2 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 text-center">
+                                        className="border-0 underline bg-none bg-gray-50 text-black text-2xl dark:text-slate-400 font-semibold rounded-lg focus:transparent dark:focus:ring-transparent ring-transparent dark:ring-transparent px-2 py-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400 text-center">
                                     {months.map((month, index) => (
                                         <option className={'bg-gray-800'} key={month} value={month}>
                                             {month}
@@ -97,14 +94,14 @@ export default function Index({auth, expenses, income, expense, loan_taken, loan
                                     ))}
                                 </select>
                                 <select onChange={handleYearChange} defaultValue={year}
-                                    className="border-0 underline bg-none bg-gray-50  text-black text-2xl dark:text-slate-400 font-semibold rounded-lg focus:transparent dark:focus:ring-transparent ring-transparent dark:ring-transparent p-2 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400">
+                                    className="border-0 underline bg-none bg-gray-50  text-black text-2xl dark:text-slate-400 font-semibold rounded-lg focus:transparent dark:focus:ring-transparent ring-transparent dark:ring-transparent px-2 py-0 dark:bg-transparent dark:border-transparent dark:placeholder-gray-400">
                                     {years.map((year) => (
                                         <option className={'bg-gray-800'} key={year} value={year}>
                                             {year}
                                         </option>
                                     ))}
                                 </select>
-                                <Link href={route('expenses.index', {month: month, year: year})} preserveScroll><button className='border border-slate-700 font-medium rounded bg-slate-800 px-3 py-1 mx-1 hover:text-blue-500 hover:bg-slate-900'><FilterList /></button></Link>
+                                <Link href={route('expenses.index', {month: month, year: year})} preserveScroll><button title="Filter" className='border border-slate-700 font-medium rounded bg-slate-800 px-3 mx-1 hover:text-blue-500 hover:bg-slate-900'><FilterList /></button></Link>
                             </h1>
                         </div>
                         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -131,19 +128,27 @@ export default function Index({auth, expenses, income, expense, loan_taken, loan
 
                     </div>
                     <div className="pt-4 pb-8 px-8 bg-white dark:bg-slate-400/10 shadow sm:rounded-lg">
-                        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <div className="flex justify-center pb-4">
                             <h1 className="text-black text-2xl dark:text-slate-400 font-semibold ">
                                 Expenses List
                             </h1>
                         </div>
+                        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            {/* <DataTable
+                                columns={columns}
+                                data={data}
+                                pagination
+                                // customStyles={customStyles}
+                                paginationComponentOptions = {paginationComponentOptions}
+                                className='w-full text-sm text-left rtl:text-right text-slate-500 dark:text-slate-400'
+                            /> */}
                             <table className="w-full text-sm text-left rtl:text-right text-slate-500 dark:text-slate-400">
                                 <thead className="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-400">
                                     <tr>
                                         <th scope="col" className="px-6 py-3">#</th>
                                         <th scope="col" className="px-6 py-3 hover:bg-slate-800 transition cursor-pointer" onClick={() => handleSort('amount')}>Amount</th>
                                         <th scope="col" className="px-6 py-3">Type</th>
-                                        <th scope="col" className="px-6 py-3" onClick={() => handleSort('date')}>Date</th>
+                                        <th scope="col" className="px-6 py-3 hover:bg-slate-800 transition cursor-pointer" onClick={() => handleSort('date')}>Date</th>
                                         <th scope="col" className="px-6 py-3">Description</th>
                                         <th scope="col" className="px-6 py-3 text-right">Action</th>
                                     </tr>

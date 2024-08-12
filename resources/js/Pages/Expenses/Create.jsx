@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, useForm} from '@inertiajs/react';
-import {FormEventHandler, useEffect} from "react";
+import { Head, useForm } from '@inertiajs/react';
+import { useEffect } from "react";
 
 export default function Create({auth})
 {
